@@ -1,3 +1,5 @@
 /*.js
 
-./src/assets/images/*
+./src/assets/*
+
+./assets/*
