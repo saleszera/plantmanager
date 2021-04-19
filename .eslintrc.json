@@ -46,7 +46,7 @@
     "prettier/prettier": "error",
     "no-tabs": ["error", { "allowIndentationTabs": true }],
     "react/require-default-props": "off",
-    "react/style-prop-object": "off"
+    "react/jsx-props-no-spreading": "off"
   },
   "settings": {
     "import/resolver": {
