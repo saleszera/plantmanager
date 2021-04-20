@@ -28,10 +28,12 @@ export function UserIdentification(): JSX.Element {
   function handleInputBlur() {
     setIsFocused(false);
     setIsFilled(!!name);
+    setIsFieldEmpty(false);
   }
 
   function handleInputFocus() {
     setIsFocused(true);
+    setIsFieldEmpty(false);
   }
 
   function handleInputChange(value: string) {
