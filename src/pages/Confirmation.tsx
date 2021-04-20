@@ -18,7 +18,7 @@ export function Confirmation(): JSX.Element {
         </Text>
 
         <View style={styles.footer}>
-          <Button />
+          <Button title="Confirmar" />
         </View>
       </View>
     </SafeAreaView>
