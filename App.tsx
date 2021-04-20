@@ -6,7 +6,7 @@ import {
 } from '@expo-google-fonts/jost';
 import AppLoading from 'expo-app-loading';
 
-import { Confirmation } from './src/pages/Confirmation';
+import Routes from './src/routes';
 
 export default function App(): JSX.Element {
   const [fontsLoaded] = useFonts({
@@ -18,5 +18,5 @@ export default function App(): JSX.Element {
     return <AppLoading />;
   }
 
-  return <Confirmation />;
+  return <Routes />;
 }
