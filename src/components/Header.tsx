@@ -6,7 +6,7 @@ import userImg from '../assets/avatar.jpeg';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
-export function Header() {
+export function Header(): JSX.Element {
   return (
     <View style={styles.container}>
       <View>
@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 20,
     marginTop: getStatusBarHeight(),
-    padding: 20,
   },
 
   greeting: {
