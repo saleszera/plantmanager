@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 
 import { Header } from '../components/Header';
 import { EnvironmentButton } from '../components/EnvironmentButton';
@@ -35,6 +41,10 @@ export function PlantSelect(): JSX.Element {
   const [environmentSelected, setEnvironmentSelected] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
 
+  const [page, setPage] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadedAll, setLoadedAll] = useState(false);
+
   function handleEnvironmentSelected(item: string) {
     setEnvironmentSelected(item);
 
@@ -64,16 +74,39 @@ export function PlantSelect(): JSX.Element {
     fectEnvironment();
   }, []);
 
-  useEffect(() => {
-    async function fectPlants() {
-      const { data } = await api.get('/plants?_sort=name&_order=asc');
-      setPlants(data);
-      setFilteredPlants(data);
-      setIsLoading(false);
+  async function fetchPlants() {
+    const { data } = await api.get(
+      `/plants?_sort=name&_order=asc&_page=${page}&_limit=8`
+    );
+
+    if (!data) {
+      return setIsLoading(true);
     }
 
-    fectPlants();
-  }, []);
+    if (page > 1) {
+      setPlants(oldValue => [...oldValue, ...data]);
+      setFilteredPlants(oldValue => [...oldValue, ...data]);
+    } else {
+      setPlants(data);
+      setFilteredPlants(data);
+    }
+
+    setIsLoading(false);
+    setLoadingMore(false);
+  }
+
+  function handleFetchMore(distante: number) {
+    if (distante < 1) {
+      return;
+    }
+    setLoadingMore(true);
+    setPage(oldValue => oldValue + 1);
+    fetchPlants();
+  }
+
+  useEffect(() => {
+    fetchPlants();
+  }, [fetchPlants]);
 
   if (isLoading) {
     return <Load />;
@@ -108,11 +141,17 @@ export function PlantSelect(): JSX.Element {
       <View style={styles.plants}>
         <FlatList
           data={filteredPlants}
-          renderItem={({ item }) => (
-            <PlantCardPrimary key={item.id} data={item} />
-          )}
+          renderItem={({ item }) => <PlantCardPrimary data={item} />}
+          keyExtractor={item => String(item.id)}
           showsVerticalScrollIndicator={false}
           numColumns={2}
+          onEndReachedThreshold={0.1}
+          onEndReached={({ distanceFromEnd }) =>
+            handleFetchMore(distanceFromEnd)
+          }
+          ListFooterComponent={
+            loadingMore ? <ActivityIndicator color={colors.green} /> : <></>
+          }
         />
       </View>
     </View>
