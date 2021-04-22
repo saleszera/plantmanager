@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -73,26 +73,26 @@ export function PlantSelect(): JSX.Element {
     fectEnvironment();
   }, []);
 
-  async function fetchPlants() {
-    const { data } = await api.get(
-      `/plants?_sort=name&_order=asc&_page=${page}&_limit=8`
-    );
+  const fetchPlants = useCallback(() => {
+    api
+      .get(`/plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
+      .then(response => {
+        if (!response.data) {
+          return setIsLoading(true);
+        }
 
-    if (!data) {
-      return setIsLoading(true);
-    }
+        if (page > 1) {
+          setPlants(oldValue => [...oldValue, ...response.data]);
+          setFilteredPlants(oldValue => [...oldValue, ...response.data]);
+        } else {
+          setPlants(response.data);
+          setFilteredPlants(response.data);
+        }
 
-    if (page > 1) {
-      setPlants(oldValue => [...oldValue, ...data]);
-      setFilteredPlants(oldValue => [...oldValue, ...data]);
-    } else {
-      setPlants(data);
-      setFilteredPlants(data);
-    }
-
-    setIsLoading(false);
-    setLoadingMore(false);
-  }
+        setIsLoading(false);
+        setLoadingMore(false);
+      });
+  }, [page]);
 
   function handleFetchMore(distante: number) {
     if (distante < 1) {
