@@ -12,6 +12,7 @@ import {
   Keyboard,
   ToastAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Button } from '../components/Button';
 
@@ -41,17 +42,19 @@ export function UserIdentification(): JSX.Element {
     setName(value);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!name) {
       setIsFieldEmpty(true);
 
       ToastAndroid.showWithGravity(
-        'Digite um nome para continuar!',
+        'Me diga como devo chamar você! 😢️',
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
     } else {
       setIsFieldEmpty(false);
+
+      await AsyncStorage.setItem('@plantmanager:user', name);
       navigate('Confirmation');
     }
   }
