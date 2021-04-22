@@ -47,15 +47,23 @@ export function UserIdentification(): JSX.Element {
       setIsFieldEmpty(true);
 
       ToastAndroid.showWithGravity(
-        'Me diga como devo chamar você! 😢️',
+        'Me diga como devo chamar você 😢️',
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
     } else {
       setIsFieldEmpty(false);
 
-      await AsyncStorage.setItem('@plantmanager:user', name);
-      navigate('Confirmation');
+      try {
+        await AsyncStorage.setItem('@plantmanager:user', name);
+        navigate('Confirmation');
+      } catch {
+        ToastAndroid.showWithGravity(
+          'Não foi possível salvar o seu nome. 😢️',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+      }
     }
   }
 

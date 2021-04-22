@@ -20,20 +20,10 @@ import waterdrop from '../assets/waterdrop.png';
 import { Button } from '../components/Button';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+import { PlantProps, savePlant } from '../libs/storage';
 
 interface Params {
-  plant: {
-    id: string;
-    name: string;
-    about: string;
-    water_tips: string;
-    photo: string;
-    environments: string[];
-    frequency: {
-      times: number;
-      repeat_every: string;
-    };
-  };
+  plant: PlantProps;
 }
 
 export function PlantSave(): JSX.Element {
@@ -49,7 +39,9 @@ export function PlantSave(): JSX.Element {
 
     if (dateTime && isBefore(dateTime, new Date())) {
       setSelectedDateTime(new Date());
-      return Alert.alert('Escolha uma hora no futuro! ⌚️');
+      Alert.alert('Escolha uma hora no futuro! ⌚️');
+
+      return;
     }
 
     if (dateTime) {
@@ -59,6 +51,19 @@ export function PlantSave(): JSX.Element {
 
   function handleOpenDateTimePickerForAndroid() {
     setShowDatePicker(oldState => !oldState);
+  }
+
+  async function handleSave() {
+    try {
+      await savePlant({
+        ...plant,
+        dateTimeNotification: selectedDateTime,
+      });
+
+      return;
+    } catch (err) {
+      Alert.alert('Não foi possível salvar. 😢️');
+    }
   }
 
   return (
@@ -101,7 +106,7 @@ export function PlantSave(): JSX.Element {
           </TouchableOpacity>
         )}
 
-        <Button title="Cadastrar planta" onPress={() => {}} />
+        <Button title="Cadastrar planta" onPress={handleSave} />
       </View>
     </View>
   );
