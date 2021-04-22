@@ -37,20 +37,46 @@ export function PlantSelect(): JSX.Element {
   function handleEnvironmentSelected(item: string) {
     setEnvironmentSelected(item);
 
-    if (item === 'all') {
-      return setFilteredPlants(plants);
-    }
+    if (item === 'all') return setFilteredPlants(plants);
 
     const filtered = plants.filter(plant => plant.environments.includes(item));
 
     return setFilteredPlants(filtered);
   }
 
+  async function fetchPlants() {
+    const { data } = await api.get(
+      `plants?_sort=name&_order=asc&_page=${page}&_limit=8`
+    );
+
+    if (!data) return setIsLoading(true);
+
+    if (page > 1) {
+      setPlants(oldValue => [...oldValue, ...data]);
+      setFilteredPlants(oldValue => [...oldValue, ...data]);
+    } else {
+      setPlants(data);
+      setFilteredPlants(data);
+    }
+
+    setIsLoading(false);
+    setLoadingMore(false);
+  }
+
+  function handleFetchMore(distance: number) {
+    if (distance < 1) return;
+
+    setLoadingMore(true);
+    setPage(oldValue => oldValue + 1);
+    fetchPlants();
+  }
+
   useEffect(() => {
-    async function fectEnvironment() {
+    async function fetchEnvironment() {
       const { data } = await api.get(
-        '/plants_environments?_sort=title&_order=asc'
+        'plants_environments?_sort=title&_order=asc'
       );
+
       setEnvironment([
         {
           key: 'all',
@@ -60,42 +86,12 @@ export function PlantSelect(): JSX.Element {
       ]);
     }
 
-    fectEnvironment();
+    fetchEnvironment();
   }, []);
-
-  const fetchPlants = useCallback(() => {
-    api
-      .get(`/plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
-      .then(response => {
-        if (!response.data) {
-          return setIsLoading(true);
-        }
-
-        if (page > 1) {
-          setPlants(oldValue => [...oldValue, ...response.data]);
-          setFilteredPlants(oldValue => [...oldValue, ...response.data]);
-        } else {
-          setPlants(response.data);
-          setFilteredPlants(response.data);
-        }
-
-        setIsLoading(false);
-        setLoadingMore(false);
-      });
-  }, [page]);
-
-  function handleFetchMore(distante: number) {
-    if (distante < 1) {
-      return;
-    }
-    setLoadingMore(true);
-    setPage(oldValue => oldValue + 1);
-    fetchPlants();
-  }
 
   useEffect(() => {
     fetchPlants();
-  }, [fetchPlants]);
+  }, []);
 
   function handlePlantSelect(plant: PlantProps) {
     navigate('PlantSave', { plant });
@@ -104,6 +100,8 @@ export function PlantSelect(): JSX.Element {
   if (isLoading) {
     return <Load />;
   }
+
+  if (isLoading) return <Load />;
 
   return (
     <View style={styles.container}>
@@ -187,6 +185,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     marginLeft: 32,
     marginVertical: 32,
+    paddingRight: 32,
   },
 
   plants: {
