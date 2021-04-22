@@ -56,7 +56,14 @@ export function UserIdentification(): JSX.Element {
 
       try {
         await AsyncStorage.setItem('@plantmanager:user', name);
-        navigate('Confirmation');
+        navigate('Confirmation', {
+          title: 'Prontinho',
+          subtitle:
+            'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
+          buttonTitle: 'Começar',
+          icon: 'smile',
+          nextScreen: 'PlantSelect',
+        });
       } catch {
         ToastAndroid.showWithGravity(
           'Não foi possível salvar o seu nome. 😢️',
