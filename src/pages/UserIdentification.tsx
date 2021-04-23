@@ -12,6 +12,7 @@ import {
   Keyboard,
   ToastAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Button } from '../components/Button';
 
@@ -41,18 +42,35 @@ export function UserIdentification(): JSX.Element {
     setName(value);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!name) {
       setIsFieldEmpty(true);
 
       ToastAndroid.showWithGravity(
-        'Digite um nome para continuar!',
+        'Me diga como devo chamar você 😢️',
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
     } else {
       setIsFieldEmpty(false);
-      navigate('Confirmation');
+
+      try {
+        await AsyncStorage.setItem('@plantmanager:user', name);
+        navigate('Confirmation', {
+          title: 'Prontinho',
+          subtitle:
+            'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
+          buttonTitle: 'Começar',
+          icon: 'smile',
+          nextScreen: 'PlantSelect',
+        });
+      } catch {
+        ToastAndroid.showWithGravity(
+          'Não foi possível salvar o seu nome. 😢️',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+      }
     }
   }
 
