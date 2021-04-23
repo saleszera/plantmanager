@@ -101,7 +101,7 @@ export function PlantSave(): JSX.Element {
             <DateTimePicker
               value={selectedDateTime}
               mode="time"
-              display="clock"
+              display="default"
               onChange={handleChangeTime}
             />
           )}
@@ -111,7 +111,7 @@ export function PlantSave(): JSX.Element {
               style={styles.dateTimePickerButton}
               onPress={handleOpenDateTimePickerForAndroid}
             >
-              <Text style={styles.dateTimePickerText}>{`Mudar ${format(
+              <Text style={styles.dateTimePickerText}>{`Me lembre às ${format(
                 selectedDateTime,
                 'HH:mm'
               )}`}</Text>
