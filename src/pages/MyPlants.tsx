@@ -10,6 +10,7 @@ import waterdrop from '../assets/waterdrop.png';
 import { loadPlant, PlantProps } from '../libs/storage';
 import fonts from '../styles/fonts';
 import { PlantCardSecundary } from '../components/PlantCardSecundary';
+import { Load } from '../components/Load';
 
 export function MyPlants(): JSX.Element {
   const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
@@ -36,6 +37,10 @@ export function MyPlants(): JSX.Element {
 
     loadStorageData();
   }, []);
+
+  if (loading) {
+    return <Load />;
+  }
 
   return (
     <View style={styles.container}>
