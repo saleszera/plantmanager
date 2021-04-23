@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 import App from '../../App';
@@ -16,7 +17,7 @@ const AuthRoutes: React.FC = () => {
         inactiveTintColor: colors.heading,
         labelPosition: 'beside-icon',
         style: {
-          paddingVertical: 10,
+          paddingVertical: Platform.OS === 'ios' ? 20 : 0,
           height: 75,
         },
       }}
