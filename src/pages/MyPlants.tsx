@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, FlatList } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import { formatDistance } from 'date-fns';
 import { pt } from 'date-fns/locale';
 
@@ -7,14 +15,42 @@ import { Header } from '../components/Header';
 
 import colors from '../styles/colors';
 import waterdrop from '../assets/waterdrop.png';
-import { loadPlant, PlantProps } from '../libs/storage';
+import { loadPlant, PlantProps, removePlant } from '../libs/storage';
 import fonts from '../styles/fonts';
 import { PlantCardSecundary } from '../components/PlantCardSecundary';
+import { Load } from '../components/Load';
 
 export function MyPlants(): JSX.Element {
   const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextWaterd, setNextWaterd] = useState<string>();
+
+  function handleRemove(plant: PlantProps) {
+    Alert.alert('Remover', `Deseja remover a ${plant.name}?`, [
+      {
+        text: 'Não 🙏️',
+        style: 'cancel',
+      },
+      {
+        text: 'Sim 😢️',
+        onPress: async () => {
+          try {
+            await removePlant(plant.id);
+
+            setMyPlants(oldData =>
+              oldData.filter(item => item.id !== plant.id)
+            );
+          } catch (err) {
+            ToastAndroid.showWithGravity(
+              'Não foi possível remover! 😢️',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER
+            );
+          }
+        },
+      },
+    ]);
+  }
 
   useEffect(() => {
     async function loadStorageData() {
@@ -37,6 +73,10 @@ export function MyPlants(): JSX.Element {
     loadStorageData();
   }, []);
 
+  if (loading) {
+    return <Load />;
+  }
+
   return (
     <View style={styles.container}>
       <Header />
@@ -51,7 +91,12 @@ export function MyPlants(): JSX.Element {
         <FlatList
           data={myPlants}
           keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => <PlantCardSecundary data={item} />}
+          renderItem={({ item }) => (
+            <PlantCardSecundary
+              data={item}
+              handleRemove={() => handleRemove(item)}
+            />
+          )}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flex: 1 }}
         />
